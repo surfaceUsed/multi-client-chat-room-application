@@ -23,10 +23,10 @@ class MessageSender implements Runnable {
             try {
 
                 messageToSend = IOUtil.getClientInput();
-                if (messageToSend.equals(Client.EXIT_COMMAND)) {
-                    this.client.closeClientConnection();
-                }
                 this.client.sendMessage(this.output, messageToSend);
+                if (messageToSend.equals(Client.EXIT_COMMAND)) {
+                    break;
+                }
 
             } catch (IOException e) {
                 System.out.println(e.getMessage());

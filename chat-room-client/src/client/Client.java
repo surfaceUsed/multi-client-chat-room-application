@@ -26,14 +26,30 @@ public class Client {
         this.connectionIsRunningStatus = false;
     }
 
+    /**
+     *
+     * Sends a message to the server.
+     */
     void sendMessage(DataOutputStream output, String message) throws IOException {
         output.writeUTF(message);
     }
 
+    /**
+     *
+     * Receives a message from the server.
+     */
     String receiveMessage(DataInputStream input) throws IOException {
         return input.readUTF();
     }
 
+    /**
+     *
+     * Starts the client by initializing input/output streams,
+     * setting up the username, and launching sender and receiver threads.
+     *
+     * Main-thread waits until sender- and receiver threads are finished (join() makes sure the program doesn't
+     * exit prematurely while threads are still running).
+     */
     public void startClient() {
 
         try (DataInputStream input = new DataInputStream(this.socket.getInputStream());
@@ -65,6 +81,11 @@ public class Client {
         }
     }
 
+    /**
+     *
+     * Handles the initial client setup by receiving a prompt from the server and sending back the
+     * username input from the user.
+     */
     private boolean initializeClientUsername(DataInputStream input, DataOutputStream output) {
 
         try {

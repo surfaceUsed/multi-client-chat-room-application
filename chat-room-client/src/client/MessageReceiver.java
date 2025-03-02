@@ -23,10 +23,10 @@ public class MessageReceiver implements Runnable {
             try {
 
                 messageFromServer = this.client.receiveMessage(this.input);
+                System.out.println(messageFromServer);
                 if (messageFromServer.equals(Client.EXIT_COMMAND + " initialized")) {
                     this.client.closeClientConnection();
-                } else {
-                    System.out.println(messageFromServer);
+                    break;
                 }
 
             } catch (IOException e) {
