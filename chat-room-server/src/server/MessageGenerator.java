@@ -2,7 +2,7 @@ package server;
 
 import java.util.List;
 
-class MessageHandler {
+class MessageGenerator {
 
     private static final String SERVER_PREFIX = "[SERVER]";
 
@@ -10,7 +10,7 @@ class MessageHandler {
     static final String LIST_COMMAND = "//list";
     static final String EXIT_COMMAND = "//exit";
 
-    private MessageHandler() {}
+    private MessageGenerator() {}
 
     static String menuOptions() {
         return String.format("""

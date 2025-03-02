@@ -23,6 +23,11 @@ public class Server {
         this.executor = executor;
     }
 
+    /**
+     *
+     * Starts the server and continuously listens for client connections. Each accepted client is assigned a
+     * new session and handled in a separate thread.
+     */
     public void start() {
 
         // TODO: create way to manually shut down server.
@@ -30,9 +35,9 @@ public class Server {
 
             try {
 
-                System.out.println(MessageHandler.waitingForClientConnection());
+                System.out.println(MessageGenerator.waitingForClientConnection());
                 this.executor.submit(new Session(this, this.serverSocket.accept()));
-                System.out.println(MessageHandler.clientConnectedToServer());
+                System.out.println(MessageGenerator.clientConnectedToServer());
 
             } catch (IOException e) {
                 System.err.println("[ERROR] Problem establishing connection with client: " + e.getMessage());
@@ -40,6 +45,10 @@ public class Server {
         }
     }
 
+    /**
+     *
+     * Broadcasts a message to all connected clients. Uses a read lock to ensure thread-safety.
+     */
     void broadcastMessage(String message) throws IOException {
         this.readLock.lock();
         try {
@@ -51,15 +60,24 @@ public class Server {
         }
     }
 
+    /**
+     *
+     * Returns a list of all the active client usernames. Uses a read lock to ensure thread-safety.
+     */
     String listActiveClientConnectionsByUserName() {
         this.readLock.lock();
         try {
-            return MessageHandler.getAllUserNames(this.clientSessions);
+            return MessageGenerator.getAllUserNames(this.clientSessions);
         } finally {
             this.readLock.unlock();
         }
     }
 
+    /**
+     *
+     * Adds a client session to the clientSession list. Uses a write lock to ensure exclusive access while
+     * modifying the list.
+     */
     void addClientSession(Session userSession) {
         this.writeLock.lock();
         try {
@@ -69,6 +87,11 @@ public class Server {
         }
     }
 
+    /**
+     *
+     * Removes a client session from the clientSession list. Uses a write lock to ensure exclusive access while
+     * modifying the list.
+     */
     void removeClientSession(Session userSession) {
         this.writeLock.lock();
         try {

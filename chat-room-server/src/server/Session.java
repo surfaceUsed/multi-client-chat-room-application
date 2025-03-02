@@ -22,15 +22,22 @@ class Session implements Runnable {
        this.output = new DataOutputStream(this.socket.getOutputStream());
    }
 
+    /**
+     *
+     * Handles the initial setup of a new client session. Prompts the client to enter a username and notifies all
+     * users of their arrival.
+     *
+     * Returns true if the initialization process was successfully, false if not.
+     */
    private boolean initializeNewClientSession() {
        try {
 
-           sendMessage(MessageHandler.createNewUserName());
+           sendMessage(MessageGenerator.createNewUserName());
            this.clientUserName = receiveMessage();
            this.server.addClientSession(this);
-           sendMessage(MessageHandler.welcomeMessage(this.clientUserName));
-           sendMessage(MessageHandler.notifyClientAboutCommandInputs());
-           this.server.broadcastMessage(MessageHandler.broadcastNewUserInChatRoom(this.clientUserName));
+           sendMessage(MessageGenerator.welcomeMessage(this.clientUserName));
+           sendMessage(MessageGenerator.notifyClientAboutCommandInputs());
+           this.server.broadcastMessage(MessageGenerator.broadcastNewUserInChatRoom(this.clientUserName));
            return true;
 
        } catch (IOException ignored) {}
@@ -69,37 +76,42 @@ class Session implements Runnable {
             } finally {
 
                 this.server.removeClientSession(this);
-                System.out.println(MessageHandler.clientSessionEnded(this.clientUserName));
+                System.out.println(MessageGenerator.clientSessionEnded(this.clientUserName));
                 terminateSession();
             }
 
         } else {
-            System.err.println(MessageHandler.creatingNewUserError());
+            System.err.println(MessageGenerator.creatingNewUserError());
             terminateSession();
         }
     }
 
+    /**
+     *
+     * Handles messages received from the client.
+     * Recognizes special commands (`//menu`, `//list`, `//exit`) and broadcasts normal messages.
+     */
     private void handleMessageFromClient(String messageFromClient) throws IOException {
 
         switch (messageFromClient) {
 
-            case MessageHandler.MENU_COMMAND:
-                sendMessage(MessageHandler.menuOptions());
+            case MessageGenerator.MENU_COMMAND:
+                sendMessage(MessageGenerator.menuOptions());
                 break;
 
-            case MessageHandler.LIST_COMMAND:
+            case MessageGenerator.LIST_COMMAND:
                 sendMessage(this.server.listActiveClientConnectionsByUserName());
                 break;
 
-            case MessageHandler.EXIT_COMMAND:
+            case MessageGenerator.EXIT_COMMAND:
                 this.isTerminateSession = true;
-                sendMessage(MessageHandler.confirmingShutDownCommandFromClient());
-                this.server.broadcastMessage(MessageHandler.broadcastUserLeftChatRoom(this.clientUserName));
+                sendMessage(MessageGenerator.confirmingShutDownCommandFromClient());
+                this.server.broadcastMessage(MessageGenerator.broadcastUserLeftChatRoom(this.clientUserName));
                 break;
 
             default:
                 this.server.broadcastMessage(this.clientUserName + ": " + messageFromClient);
-                System.out.println(MessageHandler.clientSentMessageConfirmation(this.clientUserName));
+                System.out.println(MessageGenerator.clientSentMessageConfirmation(this.clientUserName));
                 break;
         }
     }
